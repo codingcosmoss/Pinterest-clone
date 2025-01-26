@@ -21,13 +21,10 @@ use function PHPUnit\Framework\returnSelf;
 
 
 Route::get('/', [TestController::class, 'index'] );
-
-
-
-// Route::middleware(['auth:sanctum'])->group(function () {
-
-//     Route::get('/dashboard', function(){
-//         return 'Oke';
-//     });
-
-// });
+Route::post('/register' , [AuthController::class, 'register']);
+Route::post('/login' , [AuthController::class, 'login']);
+Route::middleware(['auth:sanctum'])->group(function () {
+    Route::get('/logout' , [AuthController::class , 'logout']);
+    Route::get('/getUser/{id}' , [AuthController::class , 'get']);
+    Route::post('/changePass' , [AuthController::class , 'changePasword']);
+});
