@@ -1,9 +1,11 @@
 <?php
 
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\ProfileController;
 use App\Http\Controllers\TestController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use Symfony\Component\HttpKernel\Profiler\Profile;
 
 use function PHPUnit\Framework\returnSelf;
 
@@ -27,11 +29,12 @@ Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 
 
-
 Route::middleware(['auth:sanctum'])->group(function () {
 
-    Route::get('/logout', [AuthController::class, 'logout']);
-    Route::get('/getUser/{id}', [AuthController::class, 'getUser']);
+    Route::get('/logout' , [AuthController::class , 'logout']);
+    Route::get('/getUser/{id}' , [AuthController::class , 'get']);
+    Route::post('/changePass' , [AuthController::class , 'changePasword']);
 
+    Route::get('/profile', [ProfileController::class, 'profil']);
 
 });
