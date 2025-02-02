@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\LikeResource;
 use Illuminate\Http\Request;
 use App\Models\Like;
 use App\Models\User;
@@ -15,14 +16,6 @@ class LikeController extends Controller
      * Display a listing of the resource.
      */
     public function index()
-    {
-        //
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
     {
         //
     }
@@ -61,15 +54,14 @@ class LikeController extends Controller
     public function show(string $id)
     {
         try {
-            $likeUserIds = Like::where('post_id', $id)
-                ->pluck('like_user_id'); 
-                $users = User::whereIn('id', $likeUserIds)->get();
+
+            $likeUserIds = Like::where('post_id', $id)->get();
 
                 return response()->json([
                     'status' => true,
                     'code' => 200,
                     'message' => 'Like data ⚡',
-                    'data' => $users,
+                    'data' => LikeResource::collection($likeUserIds),
                 ]);
             
         } catch (\Exception $e) {
