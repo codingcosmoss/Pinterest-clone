@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\RegisterRequest;
+use App\Http\Requests\RegisterRequest;  
 use App\Http\Requests\LoginRequest;
 use App\Http\Requests\ChangePasswordRequest;
 use Illuminate\Support\Facades\Hash;
@@ -12,17 +12,12 @@ use Illuminate\Http\Request;
 
 class AuthController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+
     public function index()
     {
         //
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
         //
@@ -134,7 +129,7 @@ class AuthController extends Controller
         }
     }
     
-    public function changePasword(Request $request)
+    public function changePasword(ChangePasswordRequest $request)
     {
         try {
             if (Hash::check($request->input('new-password'), auth()->user()->password)) {
@@ -145,10 +140,11 @@ class AuthController extends Controller
                     'data' => null,
                 ]);
             }
-
             if (Hash::check($request->input('old-password'), auth()->user()->password)) {
                 auth()->user()->password = Hash::make($request->input('new-password'));
+                
                 auth()->user()->save();
+
                 return response()->json([
                     'status' => true,
                     'code' => 200,
@@ -175,17 +171,13 @@ class AuthController extends Controller
         }
     }
     
-    /**
-     * Display the specified resource.
-     */
+
     public function show(string $id)
     {
         //
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
+
     public function update(Request $request, string $id)
     {
         //

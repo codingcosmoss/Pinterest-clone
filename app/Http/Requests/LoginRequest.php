@@ -26,7 +26,6 @@ class LoginRequest extends FormRequest
         return [
             'login' => 'required|string|max:225',
             'password' => 'required',
-
         ];
     }
 
@@ -34,10 +33,6 @@ class LoginRequest extends FormRequest
     {
         return [
             'login.required' => 'Bu maydon majburiy',
-//            'name.required' => 'The name field is required.',
-//            'name.string' => 'The name field must be a string.',
-            // 'email.required' => 'The email field is required.',
-            // 'password.required' => 'The password field is required.',
         ];
     }
 

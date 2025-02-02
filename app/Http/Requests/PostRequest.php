@@ -6,7 +6,7 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Contracts\Validation\Validator;
 
-class ChangePasswordRequest extends FormRequest
+class PostRequest extends FormRequest
 {
     /**
      * Foydalanuvchi ushbu so'rovni bajarishga ruxsatga ega ekanligini aniqlash.
@@ -22,8 +22,9 @@ class ChangePasswordRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'old-password' => 'required|string',
-            'new-password' => 'required|string|min:8',
+            'title' => 'required|string',
+            'image' => 'required',
+            'description' => 'string'
         ];
     }
 
@@ -33,11 +34,8 @@ class ChangePasswordRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'old-password.required' => 'Eski parol kiritilishi shart.',
-            'new-password.required' => 'Yangi parol kiritilishi shart.',
-            'new-password.min' => 'Yangi parol kamida 8 ta belgidan iborat bo‘lishi kerak.',
-            'new-password.confirmed' => 'Yangi parol va tasdiqlovchi parol bir xil bo‘lishi kerak.',
-            'new-password.different' => 'Yangi parol eski paroldan farq qilishi kerak.',
+            'title.required' => 'Title bolishi kerak',
+            'image.required' => 'Image boliwi kerak',
         ];
     }
 
