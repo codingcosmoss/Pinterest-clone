@@ -36,6 +36,8 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/logout' , [AuthController::class , 'logout']);
     Route::get('/getUser/{id}' , [AuthController::class , 'get']);
     Route::post('/changePass' , [AuthController::class , 'changePasword']);
+    Route::get('/posts' ,  [PostController::class , 'index'] );
+    Route::get('/posts/count' ,  [PostController::class , 'postCount']);
     Route::post('/user/post' , [PostController::class , 'store']);
     Route::get('/user/post/{id}' , [PostController::class , 'show']);
     Route::delete('/user/post/{id}' , [PostController::class , 'destroy']);
@@ -45,4 +47,8 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/post/like/users/{id}' , [LikeController::class , 'show']);
     Route::delete('/post/like/delete/{id}' , [LikeController::class , 'destroy']);
 
+    // Profile
+    Route::post('/user/update' , [ProfileController::class , 'update']);
+    Route::get('/user/allposts' , [ProfileController::class , 'getPosts']);
+    Route::get('/user/allpostcount' , [ProfileController::class , 'getPostsCount']);
 });

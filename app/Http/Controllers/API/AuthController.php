@@ -29,6 +29,10 @@ class AuthController extends Controller
             $user->name = $request->name;
             $user->login = $request->login;
             $user->password = $request->password;
+            if ($request->hasFile('image')) {
+                $path = $request->file('image')->store('images', 'public'); // Rasm 'storage/app/public/images' ichiga saqlanadi
+                $user->image = $path;
+            }            
             $user->save();
 
             $user->token = $user->createToken('laravel-vue-admin')->plainTextToken;

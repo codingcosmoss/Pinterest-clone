@@ -17,7 +17,51 @@ class PostController extends Controller
      */
     public function index()
     {
-        //
+        try {
+        $posts = Post::where('user_id', auth()->user()->id)->get();
+            
+        
+                return response()->json([
+                    'status' => true,
+                    'code' => 200,
+                    'message' => 'Barcha post malumotlari ⚡',
+                    'data' => PostResource::collection($posts),
+                ]);
+            
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'code' => $e->getCode(),
+                'message' => $e->getMessage(),
+                'data' => null,
+            ]);
+        } 
+
+    }
+
+    public function postCount()
+    {
+        try {
+        $posts = Post::where('user_id', auth()->user()->id)->get();
+        $postCount = $posts->count();
+        
+        
+                return response()->json([
+                    'status' => true,
+                    'code' => 200,
+                    'message' => 'Barcha post sonlari ⚡',
+                    'posts_count' => $postCount
+                ]);
+            
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'code' => $e->getCode(),
+                'message' => $e->getMessage(),
+                'data' => null,
+            ]);
+        } 
+
     }
 
     /**
@@ -30,7 +74,10 @@ class PostController extends Controller
                 $post->user_id = auth()->user()->id;
                 $post->title = $request->title;
                 $post->description = $request->description;
-                $post->image = $request->image;
+                if ($request->hasFile('image')) {
+                    $path = $request->file('image')->store('images', 'public'); // Rasm 'storage/app/public/images' ichiga saqlanadi
+                    $post->image = $path;
+                }            
                 $post->status = 0;
                 $post->save();        
 
@@ -38,7 +85,7 @@ class PostController extends Controller
                     'status' => true,
                     'code' => 200,
                     'message' => 'Post success created ⚡',
-                    'data' => $post,
+                    'data' => new PostResource($post),
                 ]);
             
         } catch (\Exception $e) {

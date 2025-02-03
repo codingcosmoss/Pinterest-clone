@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('login')->unique();
+            $table->string('image')->nullable(); // Rasmning nomi yoki yo‘li saqlanadi
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->rememberToken();
