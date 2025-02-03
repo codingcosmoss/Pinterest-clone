@@ -18,8 +18,7 @@ class PostController extends Controller
     public function index()
     {
         try {
-        $posts = Post::where('user_id', auth()->user()->id)->get();
-            
+                $posts = Post::all();
         
                 return response()->json([
                     'status' => true,

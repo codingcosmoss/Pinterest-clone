@@ -26,6 +26,21 @@ class LikeController extends Controller
     public function store(Request $request)
     {
         try {
+            $onLike = Like::where('like_user_id', auth()->user()->id)
+                ->where('post_id',  $request->post_id)
+                ->first();
+            
+            if ($onLike) {
+                $onLike->delete();
+                return response()->json([
+                    'status' => true,
+                    'code' => 200,
+                    'message' => 'Like ochirildi',
+                    'data' => 'test',
+                ]);
+
+            } 
+
             $like = new Like();
             $like->like_user_id  = auth()->user()->id;
             $like->post_id  = $request->post_id;
@@ -33,7 +48,7 @@ class LikeController extends Controller
 
                 return response()->json([
                     'status' => true,
-                    'code' => 200,
+                    'code' => 201,
                     'message' => 'Like bosildi ⚡',
                     'data' => 'test',
                 ]);
