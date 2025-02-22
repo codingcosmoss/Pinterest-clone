@@ -67,7 +67,8 @@ class AuthController extends Controller
             ]);
         }
 
-        if(empty($user) || !Hash::check($request->password , $user->password)) {
+        if(!empty($user) || !Hash::check($request->password , $user->password)) {
+
             return response()->json([
                 'status' => false,
                 'code' => 200,
