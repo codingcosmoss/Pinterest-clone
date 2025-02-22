@@ -28,7 +28,7 @@ class AuthController extends Controller
             $user = new User();
             $user->name = $request->name;
             $user->login = $request->login;
-            $user->password = $request->password;
+            $user->password =  Hash::make($request->password);
             if ($request->hasFile('image')) {
                 $path = $request->file('image')->store('images', 'public'); // Rasm 'storage/app/public/images' ichiga saqlanadi
                 $user->image = $path;
