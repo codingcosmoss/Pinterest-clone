@@ -132,7 +132,10 @@ class PostController extends Controller
                 // $post->user_id = auth()->user()->id;
                 $post->title = $request->title;
                 $post->description = $request->description;
-                $post->image = $request->image;
+                if ($request->hasFile('image')) {
+                    $path = $request->file('image')->store('images', 'public'); // Rasm 'storage/app/public/images' ichiga saqlanadi
+                    $post->image = $path;
+                } 
                 // $post->status = 0;
                 $post->save();        
 

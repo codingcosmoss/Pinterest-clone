@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\ProfileResource;
 use App\Http\Resources\PostResource;
 use Illuminate\Http\Request;
+use App\Http\Requests\ProfileRequest;
+
 use App\Models\User;
 use App\Models\Post;
 use Illuminate\Support\Facades\Hash;
@@ -20,7 +22,7 @@ class ProfileController extends Controller
             return response()->json([
                 'status' => true,
                 'code' => 200,
-                'message' => 'Tasdiqlanmadi',
+                'message' => 'Tasdiqlandi',
                 'data' => new ProfileResource(auth()->user()) ,
                 
             ]);
@@ -36,31 +38,34 @@ class ProfileController extends Controller
 
     }
 
-    public function update(Request $request){
-
+    public function update(Request $request)
+    {
         try {
-
-            $user = User::where('login' , auth()->user()->login)->first();
-
-        
-
-
-        $user->name = $request->name;
-        $user->login = $request->login;
-        if ($request->hasFile('image')) {
-                $path = $request->file('image')->store('images', 'public'); // Rasm 'storage/app/public/images' ichiga saqlanadi
+            $user = User::where('login', auth()->user()->login)->first();
+    
+            // Faqat mavjud va null bo'lmagan qiymatlarni o'zgartirish`
+            if ($request->filled('name')) {
+                $user->name = $request->name;
+            }
+    
+            if ($request->filled('login')) {
+                $user->login = $request->login;
+            }
+    
+            if ($request->hasFile('image')) {
+                $path = $request->file('image')->store('images', 'public'); 
                 $user->image = $path;
-            }            
-        $user->save();
-        $changedData = User::where('login' , $request->login)->first();
-
+            }
+    
+            $user->save();
+    
             return response()->json([
                 'status' => true,
                 'code' => 200,
-                'message' => 'Malumotlar ozgartirildi',
-                'data' => new ProfileResource($changedData), 
+                'message' => 'Maʼlumotlar o‘zgartirildi',
+                'data' => new ProfileResource($user), 
             ]);
-
+    
         } catch (\Exception $e) {
             return response()->json([
                 'status' => false,
@@ -69,8 +74,8 @@ class ProfileController extends Controller
                 'data' => null,
             ]);
         }
-
     }
+    
 
     public function getPosts(Request $request) {
         try {

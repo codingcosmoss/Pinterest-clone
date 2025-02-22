@@ -20,7 +20,7 @@ class PostResource extends JsonResource
             'user_id' => $this->user_id,
             'status' => $this->status,
             'title' => $this->title,
-            'image' => $this->image,
+            'image' => asset('').'storage/'. $this->image,
             'description' => $this->description,
             'like_count' => Like::where('post_id', $this->id)->count(),
         ];
