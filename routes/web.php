@@ -23,4 +23,4 @@ Route::get('/login', function () {
         'code' => 401,
         'message' => "Avtorizatsiyadan o'tilmagan"
     ]);
-});
+})->name('login');

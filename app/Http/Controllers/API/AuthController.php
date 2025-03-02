@@ -55,32 +55,29 @@ class AuthController extends Controller
     }
 
     public function login(LoginRequest $request) {
-        $user = User::where('login' , $request->input('login'))->first();
-
-        if(!$user) {
+        $user = User::where('login', $request->input('login'))->first();
+    
+        if (!$user) {
             return response()->json([
                 'status' => false,
                 'code' => 200,
                 'message' => 'Topilmadi',
                 'data' => 'User topilmasa demak data xam bolmaydi 😁',
-                
             ]);
         }
-
-        if(!empty($user) || !Hash::check($request->password , $user->password)) {
-
+    
+        // Xatolik shu joyda edi: `||` emas, `&&` bo‘lishi kerak
+        if (!Hash::check($request->password, $user->password)) {
             return response()->json([
                 'status' => false,
                 'code' => 200,
                 'message' => 'Tasdiqlanmadi',
                 'data' => 'Tasdiqlanmasa demak data xam bolmaydi 😁',
-                
             ]);
         }
-
+    
         $user->token = $user->createToken('laravel-vue-admin')->plainTextToken;
-
-        
+    
         return response()->json([
             'status' => true,
             'code' => 200,
@@ -88,6 +85,7 @@ class AuthController extends Controller
             'data' => $user,
         ]);
     }
+    
 
 
     public function get($id) {
