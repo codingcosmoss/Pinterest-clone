@@ -69,6 +69,7 @@ class PostController extends Controller
     public function store(PostRequest $request)
     {
         try {
+            
             $post = new Post();
                 $post->user_id = auth()->user()->id;
                 $post->title = $request->title;
@@ -78,7 +79,11 @@ class PostController extends Controller
                     $post->image = $path;
                 }            
                 $post->status = 0;
-                $post->save();        
+                $post->save(); 
+                
+
+                $post->categories()->attach($request->categories);
+
 
                 return response()->json([
                     'status' => true,
@@ -104,12 +109,12 @@ class PostController extends Controller
     {
         try {
             $post = Post::where('id', $id)->first();
-        
                 return response()->json([
                     'status' => true,
                     'code' => 200,
                     'message' => 'Sizning post malumotlaringiz ⚡',
                     'data' => new PostResource($post),
+                    'comments' => $post->comments()->with(['user', 'replies'])->get()
                 ]);
             
         } catch (\Exception $e) {

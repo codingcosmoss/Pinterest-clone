@@ -4,6 +4,8 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\ProfileController;
 use App\Http\Controllers\Api\PostController;
 use App\Http\Controllers\Api\LikeController;
+use App\Http\Controllers\Api\CommentController;
+
 use App\Http\Controllers\TestController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -46,7 +48,9 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::post('/user/post/like' , [LikeController::class , 'store']);
     Route::get('/post/like/users/{id}' , [LikeController::class , 'show']);
     Route::delete('/post/like/delete/{id}' , [LikeController::class , 'destroy']);
-
+    // Comments
+    Route::post('/post/comments/store' , [CommentController::class , 'store']);
+    Route::post('/post/comments/reply' , [CommentController::class , 'storeReply']);
     // Profile
     Route::post('/user/update' , [ProfileController::class , 'update']);
     Route::get('/user/allposts' , [ProfileController::class , 'getPosts']);
