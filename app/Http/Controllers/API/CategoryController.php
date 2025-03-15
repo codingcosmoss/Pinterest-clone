@@ -1,29 +1,76 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\API;
 
+use App\Http\Controllers\Controller;
 use App\Models\Category;
 use Illuminate\Http\Request;
 
 class CategoryController extends Controller
 {
-    public function index()
+    public function getAll()
     {
         $categories = Category::all();
-        return response()->json($categories);
+        return response()->json([
+            'status' => true,
+            'code' => 200,
+            'message' => 'All Categories ⚡',
+            'data' => $categories,
+        ]);
+    }
+
+    public function get(string $id)
+    {
+        try {
+            $posts = Category::where('id', $id)->first()->posts;
+
+            return response()->json([
+                'status' => true,
+                'code' => 200,
+                'message' => 'Category products ⚡',
+                'data' => $posts,
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'code' => $e->getCode(),
+                'message' => $e->getMessage(),
+                'data' => null,
+            ]);
+        }
+
+
     }
 
     public function store(Request $request)
     {
-        $request->validate([
-            'name' => 'required|string|max:255',
-        ]);
+        try {
+            
+                $category = new Category();
+                $category->name = $request->name;
+                if ($request->hasFile('image')) {
+                    $path = $request->file('image')->store('images', 'public'); // Rasm 'storage/app/public/images' ichiga saqlanadi
+                    $category->image = $path;
+                }
+                $category->save(); 
+                
 
-        $category = Category::create([
-            'name' => $request->name,
-        ]);
 
-        return response()->json($category, 201);
+                return response()->json([
+                    'status' => true,
+                    'code' => 200,
+                    'message' => 'Category success created ⚡',
+                    'data' => $category,
+                ]);
+            
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'code' => $e->getCode(),
+                'message' => $e->getMessage(),
+                'data' => null,
+            ]);
+        }
     }
 
     public function show($id)

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Http\Requests\PostRequest;
 use App\Http\Resources\PostResource;
+use App\Models\CategoryPost;
 use App\Models\Post;
 
 
@@ -67,40 +68,45 @@ class PostController extends Controller
      * Store a newly created resource in storage.
      */
     public function store(PostRequest $request)
-    {
-        try {
-            
-            $post = new Post();
-                $post->user_id = auth()->user()->id;
-                $post->title = $request->title;
-                $post->description = $request->description;
-                if ($request->hasFile('image')) {
-                    $path = $request->file('image')->store('images', 'public'); // Rasm 'storage/app/public/images' ichiga saqlanadi
-                    $post->image = $path;
-                }            
-                $post->status = 0;
-                $post->save(); 
-                
+{
+    try {
+        $post = new Post();
+        $post->user_id = auth()->user()->id;
+        $post->title = $request->title;
+        $post->description = $request->description;
 
-                $post->categories()->attach($request->categories);
+        if ($request->hasFile('image')) {
+            $path = $request->file('image')->store('images', 'public'); 
+            $post->image = $path;
+        }  
 
+        $post->status = 0;
+        $post->save();  
 
-                return response()->json([
-                    'status' => true,
-                    'code' => 200,
-                    'message' => 'Post success created ⚡',
-                    'data' => new PostResource($post),
-                ]);
-            
-        } catch (\Exception $e) {
-            return response()->json([
-                'status' => false,
-                'code' => $e->getCode(),
-                'message' => $e->getMessage(),
-                'data' => null,
-            ]);
-        }
+        // Agar `categories` maydoni JSON string sifatida kelmasa, uni array sifatida ishlatamiz
+        // $categories = is_string($request->categories) ? json_decode($request->categories, true) : $request->categories;
+
+        // Postni kategoriyalar bilan bog‘lash
+        $post->categories()->attach(json_decode($request->categories , true));
+
+        return response()->json([
+            'status' => true,
+            'code' => 200,
+            'message' => 'Post success created ⚡',
+            'data' => new PostResource($post),
+            'categories' => $request->categories
+        ]);
+
+    } catch (\Exception $e) {
+        return response()->json([
+            'status' => false,
+            'code' => $e->getCode(),
+            'message' => $e->getMessage(),
+            'data' => null,
+        ]);
     }
+}
+
 
     /**
      * Display the specified resource.
@@ -108,13 +114,21 @@ class PostController extends Controller
     public function show(string $id)
     {
         try {
-            $post = Post::where('id', $id)->first();
+            $post = Post::with(['categories', 'comments.user', 'comments.replies.user'])->findOrFail($id);
+            // $post = Post::where('id', $id)->first();
                 return response()->json([
                     'status' => true,
                     'code' => 200,
                     'message' => 'Sizning post malumotlaringiz ⚡',
                     'data' => new PostResource($post),
-                    'comments' => $post->comments()->with(['user', 'replies'])->get()
+                    'categories' => $post->categories->map(function ($category) {
+                return [
+                    'id' => $category->id,
+                    'name' => $category->name,
+                    'posts' => $category->posts, // Ushbu kategoriya ichidagi postlar
+                ];
+            }),
+            'comments' => $post->comments,
                 ]);
             
         } catch (\Exception $e) {

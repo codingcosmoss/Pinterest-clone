@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\LikeResource;
 use Illuminate\Http\Request;
 use App\Models\Like;
+use App\Models\Post;
 use App\Models\User;
 
 
@@ -88,6 +89,59 @@ class LikeController extends Controller
             ]);
         }
     }
+
+    public function checkLike(string $post_id, string $user_id)
+    {
+        try {
+
+            $exists = Like::where('post_id', $post_id)
+    ->where('like_user_id', $user_id)
+    ->exists(); // Agar ma'lumot bo'lsa true, bo'lmasa false
+
+
+                return response()->json([
+                    'status' => true,
+                    'code' => 200,
+                    'message' => 'Check like on post ⚡',
+                    'data' => $exists,
+                ]);
+            
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'code' => $e->getCode(),
+                'message' => 'catch',
+                'data' => null,
+            ]);
+        }
+    }
+
+    public function getUserLikedPosts()
+{
+    try {
+        $userId = auth()->id(); // Hozirgi user ID ni olish
+
+        // Foydalanuvchi like bosgan post_id larni olish
+        $likedPostIds = Like::where('like_user_id', $userId)->pluck('post_id');
+
+        // O'sha post_id lar bo'yicha postlarni olish
+        $likedPosts = Post::whereIn('id', $likedPostIds)->get();
+    
+        return response()->json([
+            'status' => true,
+            'message' => 'Liked posts fetched successfully',
+            'data' => $likedPosts
+        ]);
+        
+    } catch (\Exception $e) {
+        return response()->json([
+            'status' => false,
+            'code' => $e->getCode(),
+            'message' => 'catch',
+            'data' => null,
+        ]);
+    }
+}
 
     /**
      * Show the form for editing the specified resource.
