@@ -63,4 +63,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::post('/category' , [CategoryController::class , 'store']);
     Route::get('/category/post/{id}' , [CategoryController::class , 'get']);
     Route::get('/category/all' , [CategoryController::class , 'getAll']);
+
+    // Statictis
+    Route::get('/statistic' , [PostController::class , 'postStatistics']);
 });

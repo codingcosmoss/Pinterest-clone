@@ -8,6 +8,8 @@ use App\Http\Requests\PostRequest;
 use App\Http\Resources\PostResource;
 use App\Models\CategoryPost;
 use App\Models\Post;
+use App\Models\User;
+use App\Models\Like;
 
 
 
@@ -16,28 +18,35 @@ class PostController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
-    {
-        try {
-                $posts = Post::all();
-        
-                return response()->json([
-                    'status' => true,
-                    'code' => 200,
-                    'message' => 'Barcha post malumotlari ⚡',
-                    'data' => PostResource::collection($posts),
-                ]);
-            
-        } catch (\Exception $e) {
-            return response()->json([
-                'status' => false,
-                'code' => $e->getCode(),
-                'message' => $e->getMessage(),
-                'data' => null,
-            ]);
-        } 
+    public function index(Request $request)
+{
+    try {
+        $perPage = $request->query('per_page', 10); // default 10 ta
+        $posts = Post::paginate($perPage);
 
+        return response()->json([
+            'status' => true,
+            'code' => 200,
+            'message' => 'Postlar ro‘yxati ⚡',
+            'data' => PostResource::collection($posts),
+            'meta' => [
+                'current_page' => $posts->currentPage(),
+                'last_page' => $posts->lastPage(),
+                'per_page' => $posts->perPage(),
+                'total' => $posts->total(),
+            ]
+        ]);
+
+    } catch (\Exception $e) {
+        return response()->json([
+            'status' => false,
+            'code' => $e->getCode() ?: 500,
+            'message' => $e->getMessage(),
+            'data' => null,
+        ]);
     }
+}
+
 
     public function postCount()
     {
@@ -172,6 +181,38 @@ class PostController extends Controller
                 'message' => $e->getMessage(),
                 'data' => null,
             ]);
+        }
+    }
+
+    public function postStatistics(Request $request) {
+        try {
+            $postCount = Post::count();
+            $userCount = User::count();
+            // $likeCount == Like::count();
+            $mostFrequentUserId = Post::select('user_id')
+    ->groupBy('user_id')
+    ->orderByRaw('COUNT(*) DESC')
+    ->limit(1)
+    ->value('user_id');
+
+            return response()->json([
+                'status' => true,
+                'code' => 200,
+                'message' => 'Post Statistics',
+                'posts_count' => $postCount,
+                'userCount' => $userCount,
+                // 'like_count' => $likeCount,
+                'topUserId' => $mostFrequentUserId
+            ]);
+        }
+
+        catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'code' => $e->getCode(),
+                'message' => $e->getMessage(),
+                'data' => null,
+            ]);   
         }
     }
 
